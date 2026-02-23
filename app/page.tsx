@@ -12,7 +12,7 @@ import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/comp
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { 
   GraduationCap, Loader2, BookOpen, Settings, Lock, 
-  Trash2, Edit3, Plus, Save, AlertTriangle, Code2, Heart 
+  Trash2, Edit3, Plus, Save, AlertTriangle, Code2, Heart, CheckCircle2, Clock
 } from 'lucide-react';
 
 const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycby5j5IyS2E8blGQqXKLGB-xntMHl1_HUQUR7xs3Clo_nByuc9v6ZzDr7-J05Pi1aNt1/exec";
@@ -24,6 +24,8 @@ export default function BookingSystem() {
   const [rooms, setRooms] = useState<any[]>([]);
   const [purposes, setPurposes] = useState<string[]>([]);
   const [loading, setLoading] = useState(false);
+  const [bookingSuccess, setBookingSuccess] = useState(false);
+  
   const [siteSettings, setSiteSettings] = useState({ 
     schoolName: "LOADING...", 
     systemName: "MEMUATKAN DATA", 
@@ -57,29 +59,14 @@ export default function BookingSystem() {
 
   const autoAssignAssets = (name: string) => {
     const n = name.toLowerCase();
-
-    // HIJAU - Tambah baris ini untuk Sains/Alam Sekitar
-    if (n.includes("sains") || n.includes("eko") || n.includes("biologi")) 
-      return { icon: "🔬", color: "from-green-600 to-green-700" };
-
-    // MERAH - Tambah baris ini untuk Bengkel/Masakan
-    if (n.includes("bengkel") || n.includes("rbt") || n.includes("masak")) 
-      return { icon: "🛠️", color: "from-red-600 to-red-700" };
-
-    // KOD ASAL ANDA (Telah dibetulkan jaraknya)
-    if (n.includes("komputer") || n.includes("ict") || n.includes("makmal")) 
-      return { icon: "💻", color: "from-blue-600 to-indigo-700" };
-    if (n.includes("sukan") || n.includes("pj") || n.includes("gim")) 
-      return { icon: "⚽", color: "from-orange-500 to-red-600" };
-    if (n.includes("seni") || n.includes("kreatif"))
-      return { icon: "🎨", color: "from-pink-500 to-rose-600" };
-    if (n.includes("muzik") || n.includes("orkestra"))
-      return { icon: "🎸", color: "from-purple-600 to-violet-700" };
-    if (n.includes("perpustakaan") || n.includes("sumber") || n.includes("pss")) 
-      return { icon: "📚", color: "from-emerald-600 to-teal-700" };
-    if (n.includes("mesyuarat") || n.includes("gerakan") || n.includes("bilik m")) 
-      return { icon: "🤝", color: "from-slate-700 to-slate-900" };
-    
+    if (n.includes("sains") || n.includes("eko") || n.includes("biologi")) return { icon: "🔬", color: "from-green-600 to-green-700" };
+    if (n.includes("bengkel") || n.includes("rbt") || n.includes("masak")) return { icon: "🛠️", color: "from-red-600 to-red-700" };
+    if (n.includes("komputer") || n.includes("ict") || n.includes("makmal")) return { icon: "💻", color: "from-blue-600 to-indigo-700" };
+    if (n.includes("sukan") || n.includes("pj") || n.includes("gim")) return { icon: "⚽", color: "from-orange-500 to-red-600" };
+    if (n.includes("seni") || n.includes("kreatif")) return { icon: "🎨", color: "from-pink-500 to-rose-600" };
+    if (n.includes("muzik") || n.includes("orkestra")) return { icon: "🎸", color: "from-purple-600 to-violet-700" };
+    if (n.includes("perpustakaan") || n.includes("sumber") || n.includes("pss")) return { icon: "📚", color: "from-emerald-600 to-teal-700" };
+    if (n.includes("mesyuarat") || n.includes("gerakan") || n.includes("bilik m")) return { icon: "🤝", color: "from-slate-700 to-slate-900" };
     return { icon: "🏢", color: "from-blue-600 to-blue-700" };
   };
 
@@ -122,7 +109,12 @@ export default function BookingSystem() {
     const payload = { ...tempBooking, room_name: tempBooking.room, user_name: tempBooking.name, booking_date: normalizeDate(date), start_time: tempBooking.startTime, end_time: tempBooking.endTime, purpose_type: tempBooking.purposeType, purpose_detail: tempBooking.purposeDetail || "-" };
     try {
       await fetch(GOOGLE_SCRIPT_URL, { method: "POST", mode: "no-cors", body: JSON.stringify({ action: "addBooking", data: payload }) });
-      setTimeout(() => { fetchData(); setShowModal(false); setLoading(false); }, 2000);
+      setTimeout(() => { 
+        fetchData(); 
+        setLoading(false);
+        setShowModal(false);
+        setBookingSuccess(true);
+      }, 2000);
     } catch (e) { setLoading(false); }
   };
 
@@ -162,15 +154,28 @@ export default function BookingSystem() {
               </div>
               <Calendar mode="single" selected={date} onSelect={setDate} className="p-0 flex justify-center border-none" />
               
-              {/* DEVELOPER CREDIT (DI BAWAH KALENDAR) */}
-              <div className="mt-8 pt-6 border-t border-slate-100 flex flex-col items-right">
+              <div className="mt-6 p-4 bg-slate-50 rounded-2xl space-y-3 border border-slate-100">
+                <p className="text-[9px] font-black uppercase text-slate-400 tracking-widest border-b pb-2">Status Slot Masa</p>
+                <div className="flex items-center gap-3">
+                  <div className="w-3 h-3 rounded-full bg-slate-200" />
+                  <p className="text-[10px] font-bold text-slate-500 uppercase">Tamat/Lepas</p>
+                </div>
+                <div className="flex items-center gap-3">
+                  <div className="w-3 h-3 rounded-full bg-red-500" />
+                  <p className="text-[10px] font-bold text-slate-500 uppercase">Sudah Ditempah</p>
+                </div>
+                <div className="flex items-center gap-3">
+                  <div className="w-3 h-3 rounded-full bg-white border border-slate-300" />
+                  <p className="text-[10px] font-bold text-slate-500 uppercase">Sedia Ditempah</p>
+                </div>
+              </div>
+
+              <div className="mt-8 pt-6 border-t border-slate-100 flex flex-col items-start">
                 <div className="flex items-center gap-2 mb-2">
                   <Code2 size={12} className="text-blue-500" />
                   <p className="text-[9px] font-black uppercase tracking-[0.2em] text-slate-400">Developer</p>
                 </div>
-                <p className="text-[11px] font-black text-slate-700 uppercase tracking-tight mb-1">
-                  CIKGU JEYA
-                </p>
+                <p className="text-[11px] font-black text-slate-700 uppercase tracking-tight mb-1">CIKGU JEYA</p>
                 <div className="flex items-center gap-1.5">
                   <Heart size={10} className="text-red-400 fill-red-400" />
                   <p className="text-[8px] font-bold text-slate-400 uppercase tracking-widest">v2.0 • 2026</p>
@@ -228,7 +233,94 @@ export default function BookingSystem() {
           </main>
         </div>
 
-        {/* ADMIN PANEL DIALOGS (Sama seperti sebelum ini) */}
+        {/* DIALOG: BOOKING MODAL */}
+        <Dialog open={showModal} onOpenChange={setShowModal}>
+          <DialogContent className="rounded-[40px] max-w-[400px] p-8 border-none shadow-2xl">
+            <DialogHeader className="text-left space-y-1">
+              <DialogTitle className="text-xl font-black uppercase text-slate-800 tracking-tight flex items-center gap-2">
+                <Plus className="text-blue-600" size={24}/> {tempBooking.room}
+              </DialogTitle>
+              <DialogDescription className="text-[10px] font-black text-blue-600 bg-blue-50 w-fit px-4 py-1 rounded-full uppercase">
+                {normalizeDate(date)}
+              </DialogDescription>
+            </DialogHeader>
+            <div className="space-y-5 mt-8">
+              <div className="space-y-1.5"><Label className="text-[10px] font-black uppercase text-slate-400 ml-1">Nama Pemohon</Label><Input value={tempBooking.name} onChange={e => setTempBooking({...tempBooking, name: e.target.value})} className="rounded-2xl h-12 bg-slate-50 border-none font-black" placeholder="Nama Guru" /></div>
+              
+              <div className="grid grid-cols-2 gap-4">
+                <div className="space-y-1.5">
+                  <Label className="text-[10px] font-black uppercase text-slate-400 ml-1 flex items-center gap-1"><Clock size={10}/> Masa Mula</Label>
+                  <div className="h-12 rounded-2xl bg-slate-100 flex items-center px-4 font-black text-slate-500 text-sm border-2 border-dashed border-slate-200">
+                    {tempBooking.startTime}
+                  </div>
+                </div>
+                <div className="space-y-1.5">
+                  <Label className="text-[10px] font-black uppercase text-blue-600 ml-1 flex items-center gap-1"><Clock size={10}/> Masa Tamat</Label>
+                  <select className="w-full h-12 rounded-2xl bg-white border-2 border-blue-100 text-[11px] font-black px-3 outline-none focus:border-blue-500 transition-all shadow-sm" value={tempBooking.endTime} onChange={e => setTempBooking({...tempBooking, endTime: e.target.value})}>
+                    <option value="">PILIH</option>
+                    {timeSlots.filter(t => toMinutes(t) > toMinutes(tempBooking.startTime)).map(t => <option key={t} value={t}>{t}</option>)}
+                    <option value="15:00">15:00</option>
+                    <option value="15:30">15:30</option>
+                    <option value="16:00">16:00</option>
+                  </select>
+                </div>
+              </div>
+
+              <div className="space-y-1.5">
+                <Label className="text-[10px] font-black uppercase text-slate-400 ml-1">Tujuan / Aktiviti</Label>
+                <select className="w-full h-12 rounded-2xl bg-slate-50 text-[11px] font-black px-3 outline-none" value={tempBooking.purposeType} onChange={e => setTempBooking({...tempBooking, purposeType: e.target.value})}>
+                  <option value="">PILIH TUJUAN</option>
+                  {purposes.map(p => <option key={p} value={p}>{p.toUpperCase()}</option>)}
+                </select>
+              </div>
+
+              <div className="space-y-1.5">
+                <Label className="text-[10px] font-black uppercase text-slate-400 ml-1">Catatan Tambahan (Kelas/Kumpulan)</Label>
+                <Input value={tempBooking.purposeDetail} onChange={e => setTempBooking({...tempBooking, purposeDetail: e.target.value})} className="rounded-2xl h-12 bg-slate-50 border-none font-black" placeholder="Cth: 5 Arif / Robotik Club" />
+              </div>
+
+              <Button onClick={handleBooking} disabled={loading} className="w-full h-14 rounded-[20px] bg-blue-600 font-black uppercase text-xs tracking-widest shadow-xl shadow-blue-100 hover:bg-blue-700 transition-all active:scale-95">
+                {loading ? <Loader2 className="animate-spin" /> : "Sahkan Tempahan"}
+              </Button>
+            </div>
+          </DialogContent>
+        </Dialog>
+
+        {/* DIALOG: NOTIFIKASI BERJAYA (FIXED) */}
+        <Dialog open={bookingSuccess} onOpenChange={setBookingSuccess}>
+          <DialogContent className="rounded-[40px] max-w-[320px] p-8 text-center border-none shadow-2xl overflow-hidden">
+            <DialogHeader className="sr-only">
+              <DialogTitle>Tempahan Berjaya</DialogTitle>
+              <DialogDescription>Notifikasi pengesahan tempahan bilik</DialogDescription>
+            </DialogHeader>
+            <div className="absolute top-0 left-0 w-full h-2 bg-emerald-500" />
+            <div className="flex flex-col items-center py-4">
+              <div className="bg-emerald-100 p-4 rounded-full mb-4 animate-bounce">
+                <CheckCircle2 size={48} className="text-emerald-600" />
+              </div>
+              <h3 className="text-xl font-black uppercase text-slate-800 mb-2">Tempahan Berjaya!</h3>
+              <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest leading-relaxed">Rekod anda telah disimpan ke dalam pangkalan data sekolah.</p>
+              <Button onClick={() => setBookingSuccess(false)} className="mt-8 w-full bg-slate-900 rounded-2xl h-12 font-black uppercase text-[10px]">Tutup</Button>
+            </div>
+          </DialogContent>
+        </Dialog>
+
+        {/* ADMIN LOGIN (FIXED) */}
+        <Dialog open={showAdminLogin} onOpenChange={setShowAdminLogin}>
+          <DialogContent className="rounded-[40px] max-w-[320px] p-10 text-center border-none shadow-2xl">
+            <DialogHeader className="items-center">
+              <div className="bg-blue-100 p-5 rounded-3xl text-blue-600 mb-2"><Lock size={32} /></div>
+              <DialogTitle className="text-2xl font-black uppercase tracking-tighter">ADMIN LOGIN</DialogTitle>
+              <DialogDescription className="sr-only">Sila masukkan kata laluan admin</DialogDescription>
+            </DialogHeader>
+            <div className="mt-6 space-y-4">
+              <Input type="password" value={passwordInput} onChange={e => setPasswordInput(e.target.value)} onKeyDown={e => e.key === 'Enter' && (passwordInput === "admin123" ? (setIsAdmin(true), setShowAdminLogin(false), setShowAdminPanel(true), setPasswordInput("")) : alert("Salah!"))} className="text-center font-black h-14 bg-slate-50 border-none rounded-2xl text-lg tracking-[0.4em]" placeholder="••••" />
+              <Button onClick={() => passwordInput === "admin123" ? (setIsAdmin(true), setShowAdminLogin(false), setShowAdminPanel(true), setPasswordInput("")) : alert("Salah!")} className="w-full h-14 rounded-2xl bg-slate-900 font-black uppercase text-[10px] tracking-widest shadow-xl">Masuk Panel</Button>
+            </div>
+          </DialogContent>
+        </Dialog>
+
+        {/* ADMIN PANEL */}
         <Dialog open={showAdminPanel} onOpenChange={setShowAdminPanel}>
           <DialogContent className="max-w-4xl h-[85vh] flex flex-col p-0 rounded-[40px] overflow-hidden border-none shadow-2xl">
             <DialogHeader className="p-8 bg-slate-900 text-white shrink-0">
@@ -242,19 +334,11 @@ export default function BookingSystem() {
                 <TabsTrigger value="settings" className="text-[10px] font-black uppercase px-6">Header</TabsTrigger>
                 <TabsTrigger value="data" className="text-[10px] font-black uppercase px-6 text-red-600">Rekod</TabsTrigger>
               </TabsList>
-
               <TabsContent value="rooms" className="flex-grow overflow-y-auto p-8 pt-4">
                 <Button onClick={() => setIsEditingRoom({ name: "", icon: "🏢", capacity: "30", color: "from-blue-600 to-blue-700", status: "Active" })} className="mb-6 bg-blue-600 text-[10px] font-black uppercase rounded-xl px-6 h-11 shadow-lg shadow-blue-100">+ Tambah Bilik</Button>
                 {isEditingRoom && (
                   <Card className="p-5 mb-8 border-2 border-blue-100 bg-blue-50/50 rounded-[24px] grid grid-cols-2 md:grid-cols-5 gap-4 animate-in slide-in-from-top-2">
-                    <div className="space-y-1">
-                      <Label className="text-[10px] font-black uppercase text-slate-500">Nama</Label>
-                      <Input value={isEditingRoom.name} onChange={e => {
-                          const name = e.target.value;
-                          const assets = autoAssignAssets(name);
-                          setIsEditingRoom({ ...isEditingRoom, name, icon: assets.icon, color: assets.color });
-                      }} className="h-10 rounded-xl bg-white border-slate-200" placeholder="Cth: Makmal 1" />
-                    </div>
+                    <div className="space-y-1"><Label className="text-[10px] font-black uppercase text-slate-500">Nama</Label><Input value={isEditingRoom.name} onChange={e => { const name = e.target.value; const assets = autoAssignAssets(name); setIsEditingRoom({ ...isEditingRoom, name, icon: assets.icon, color: assets.color }); }} className="h-10 rounded-xl bg-white border-slate-200" placeholder="Cth: Makmal 1" /></div>
                     <div className="space-y-1"><Label className="text-[10px] font-black uppercase text-slate-500">Ikon</Label><Input value={isEditingRoom.icon} onChange={e=>setIsEditingRoom({...isEditingRoom, icon:e.target.value})} className="h-10 rounded-xl bg-white border-slate-200" /></div>
                     <div className="space-y-1"><Label className="text-[10px] font-black uppercase text-slate-500">Pax</Label><Input value={isEditingRoom.capacity} onChange={e=>setIsEditingRoom({...isEditingRoom, capacity:e.target.value})} className="h-10 rounded-xl bg-white border-slate-200" /></div>
                     <div className="space-y-1"><Label className="text-[10px] font-black uppercase text-slate-500">Warna</Label><Input value={isEditingRoom.color} onChange={e=>setIsEditingRoom({...isEditingRoom, color:e.target.value})} className="h-10 rounded-xl bg-white border-slate-200" /></div>
@@ -276,7 +360,6 @@ export default function BookingSystem() {
                   ))}
                 </div>
               </TabsContent>
-
               <TabsContent value="purposes" className="flex-grow overflow-y-auto p-8 pt-4">
                 <div className="max-w-md space-y-6">
                   <div className="space-y-2">
@@ -296,7 +379,6 @@ export default function BookingSystem() {
                   </div>
                 </div>
               </TabsContent>
-
               <TabsContent value="settings" className="p-8 h-full overflow-y-auto">
                 <div className="max-w-sm space-y-6 pb-10">
                   <div className="space-y-2"><Label className="text-[10px] font-black uppercase text-slate-400 tracking-widest ml-1">Nama Sekolah</Label><Input value={siteSettings.schoolName} onChange={e => setSiteSettings({...siteSettings, schoolName: e.target.value})} className="rounded-2xl h-12 border-slate-200 font-black text-xs uppercase" /></div>
@@ -305,75 +387,13 @@ export default function BookingSystem() {
                   <Button onClick={() => saveAdminAction("updateSettings", siteSettings)} className="w-full bg-slate-900 font-black uppercase text-[10px] h-14 rounded-2xl shadow-xl mt-6">Simpan Semua Tetapan</Button>
                 </div>
               </TabsContent>
-
               <TabsContent value="data" className="flex-grow overflow-y-auto p-8 pt-4">
-                <div className="sticky top-0 bg-white pb-6 z-20">
-                  <Card className="p-6 bg-red-50 border-2 border-red-100 rounded-[28px] flex justify-between items-center">
-                    <div className="flex items-center gap-4 text-red-600 font-black text-sm uppercase"><AlertTriangle size={32}/> PADAM SEMUA DATA</div>
-                    <Button variant="destructive" onClick={() => { if(prompt("Taip 'RESET' untuk sahkan") === "RESET") saveAdminAction("clearAllBookings", {}) }} className="rounded-2xl font-black text-[10px] uppercase h-12 px-8 shadow-xl">Clear All</Button>
-                  </Card>
-                </div>
-                <div className="space-y-3 mt-2">
-                  {bookings.slice(0).reverse().map((b, i) => (
-                    <div key={i} className="p-4 bg-white rounded-[24px] border border-slate-100 flex justify-between items-center shadow-sm">
-                      <div>
-                        <p className="font-black text-[11px] text-blue-600 uppercase leading-none">{b.user_name}</p>
-                        <p className="text-[10px] text-slate-400 font-bold uppercase mt-2">{b.room_name} | {b.booking_date} | {b.start_time}-{b.end_time}</p>
-                      </div>
-                      <Button variant="ghost" onClick={() => saveAdminAction("deleteBooking", { row_index: b.row_index })} className="text-red-400 hover:bg-red-50 rounded-xl h-12 w-12"><Trash2 size={20}/></Button>
-                    </div>
-                  ))}
-                </div>
+                <div className="sticky top-0 bg-white pb-6 z-20"><Card className="p-6 bg-red-50 border-2 border-red-100 rounded-[28px] flex justify-between items-center"><div className="flex items-center gap-4 text-red-600 font-black text-sm uppercase"><AlertTriangle size={32}/> PADAM SEMUA DATA</div><Button variant="destructive" onClick={() => { if(prompt("Taip 'RESET' untuk sahkan") === "RESET") saveAdminAction("clearAllBookings", {}) }} className="rounded-2xl font-black text-[10px] uppercase h-12 px-8 shadow-xl">Clear All</Button></Card></div>
+                <div className="space-y-3 mt-2">{bookings.slice(0).reverse().map((b, i) => (<div key={i} className="p-4 bg-white rounded-[24px] border border-slate-100 flex justify-between items-center shadow-sm"><div><p className="font-black text-[11px] text-blue-600 uppercase leading-none">{b.user_name}</p><p className="text-[10px] text-slate-400 font-bold uppercase mt-2">{b.room_name} | {b.booking_date} | {b.start_time}-{b.end_time}</p></div><Button variant="ghost" onClick={() => saveAdminAction("deleteBooking", { row_index: b.row_index })} className="text-red-400 hover:bg-red-50 rounded-xl h-12 w-12"><Trash2 size={20}/></Button></div>))}</div>
               </TabsContent>
             </Tabs>
           </DialogContent>
         </Dialog>
-
-        {/* DIALOG: BOOKING MODAL */}
-        <Dialog open={showModal} onOpenChange={setShowModal}>
-          <DialogContent className="rounded-[40px] max-w-[360px] p-8 border-none shadow-2xl">
-            <DialogHeader className="text-left space-y-1">
-              <DialogTitle className="text-lg font-black uppercase text-slate-800 tracking-tight">{tempBooking.room}</DialogTitle>
-              <DialogDescription className="text-[10px] font-black text-blue-600 bg-blue-50 w-fit px-4 py-1 rounded-full uppercase">{normalizeDate(date)}</DialogDescription>
-            </DialogHeader>
-            <div className="space-y-5 mt-8">
-              <div className="space-y-1.5"><Label className="text-[10px] font-black uppercase text-slate-400 ml-1">Nama Pemohon</Label><Input value={tempBooking.name} onChange={e => setTempBooking({...tempBooking, name: e.target.value})} className="rounded-2xl h-12 bg-slate-50 border-none font-black" placeholder="Nama Guru" /></div>
-              <div className="grid grid-cols-2 gap-4">
-                <div className="space-y-1.5"><Label className="text-[10px] font-black uppercase text-slate-400 ml-1">Tujuan</Label>
-                  <select className="w-full h-12 rounded-2xl bg-slate-50 text-[11px] font-black px-3 outline-none" value={tempBooking.purposeType} onChange={e => setTempBooking({...tempBooking, purposeType: e.target.value})}>
-                    <option value="">PILIH</option>{purposes.map(p => <option key={p} value={p}>{p.toUpperCase()}</option>)}
-                  </select>
-                </div>
-                <div className="space-y-1.5"><Label className="text-[10px] font-black uppercase text-slate-400 ml-1">Hingga Jam</Label>
-                  <select className="w-full h-12 rounded-2xl bg-slate-50 text-[11px] font-black px-3 outline-none" value={tempBooking.endTime} onChange={e => setTempBooking({...tempBooking, endTime: e.target.value})}>
-                    <option value="">PILIH</option>
-                    {timeSlots.filter(t => toMinutes(t) > toMinutes(tempBooking.startTime)).map(t => <option key={t} value={t}>{t}</option>)}
-                    <option value="15:00">15:00</option>
-                  </select>
-                </div>
-              </div>
-              <div className="space-y-1.5"><Label className="text-[10px] font-black uppercase text-slate-400 ml-1">Detail Program</Label><Input value={tempBooking.purposeDetail} onChange={e => setTempBooking({...tempBooking, purposeDetail: e.target.value})} className="rounded-2xl h-12 bg-slate-50 border-none font-black" placeholder="Cth: 5 Arif" /></div>
-              <Button onClick={handleBooking} disabled={loading} className="w-full h-14 rounded-[20px] bg-blue-600 font-black uppercase text-xs tracking-widest shadow-xl shadow-blue-100 hover:bg-blue-700">
-                {loading ? <Loader2 className="animate-spin" /> : "Sahkan Tempahan"}
-              </Button>
-            </div>
-          </DialogContent>
-        </Dialog>
-
-        {/* ADMIN LOGIN */}
-        <Dialog open={showAdminLogin} onOpenChange={setShowAdminLogin}>
-          <DialogContent className="rounded-[40px] max-w-[320px] p-10 text-center border-none shadow-2xl">
-            <DialogHeader className="items-center">
-              <div className="bg-blue-100 p-5 rounded-3xl text-blue-600 mb-2"><Lock size={32} /></div>
-              <DialogTitle className="text-2xl font-black uppercase tracking-tighter">ADMIN</DialogTitle>
-            </DialogHeader>
-            <div className="mt-6 space-y-4">
-              <Input type="password" value={passwordInput} onChange={e => setPasswordInput(e.target.value)} onKeyDown={e => e.key === 'Enter' && (passwordInput === "admin123" ? (setIsAdmin(true), setShowAdminLogin(false), setShowAdminPanel(true), setPasswordInput("")) : alert("Salah!"))} className="text-center font-black h-14 bg-slate-50 border-none rounded-2xl text-lg tracking-[0.4em]" placeholder="••••" />
-              <Button onClick={() => passwordInput === "admin123" ? (setIsAdmin(true), setShowAdminLogin(false), setShowAdminPanel(true), setPasswordInput("")) : alert("Salah!")} className="w-full h-14 rounded-2xl bg-slate-900 font-black uppercase text-[10px] tracking-widest shadow-xl">Masuk Panel</Button>
-            </div>
-          </DialogContent>
-        </Dialog>
-
       </div>
     </TooltipProvider>
   );
