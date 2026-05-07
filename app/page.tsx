@@ -105,34 +105,18 @@ export default function BookingSystem() {
     } catch (e) { setLoading(false); }
   };
 
-  // FUNGSI WARNA BARU YANG LEBIH PINTAR
   const getHeaderStyle = (colorStr: string) => {
     const defaultBlue = { backgroundColor: '#2563eb' };
     if (!colorStr) return defaultBlue;
-
     const colorMap: { [key: string]: string } = {
-      'red': '#dc2626',
-      'blue': '#2563eb',
-      'green': '#16a34a',
-      'orange': '#ea580c',
-      'amber': '#d97706',
-      'yellow': '#ca8a04',
-      'purple': '#9333ea',
-      'pink': '#db2777',
-      'slate': '#475569',
-      'gray': '#4b5563',
-      'emerald': '#059669',
-      'indigo': '#4f46e5',
-      'sky': '#0284c7'
+      'red': '#dc2626', 'blue': '#2563eb', 'green': '#16a34a', 'orange': '#ea580c',
+      'amber': '#d97706', 'yellow': '#ca8a04', 'purple': '#9333ea', 'pink': '#db2777',
+      'slate': '#475569', 'gray': '#4b5563', 'emerald': '#059669', 'indigo': '#4f46e5', 'sky': '#0284c7'
     };
-
-    // 1. Jika cikgu guna Tailwind 'bg-red-600'
     if (colorStr.startsWith('bg-')) {
         const colorName = colorStr.split('-')[1];
         return { backgroundColor: colorMap[colorName] || colorMap['blue'] };
     }
-
-    // 2. Jika cikgu guna Tailwind 'from-red-600 to-red-700'
     if (colorStr.includes('from-')) {
         const parts = colorStr.split(' ');
         const fromName = parts[0].replace('from-', '').split('-')[0];
@@ -141,13 +125,8 @@ export default function BookingSystem() {
         const toHex = colorMap[toName] || '#1e40af';
         return { background: `linear-gradient(to bottom right, ${fromHex}, ${toHex})` };
     }
-
-    // 3. Jika cikgu cuma tulis 'red' atau 'blue' dalam Sheets
     const cleanColor = colorStr.toLowerCase().trim();
-    if (colorMap[cleanColor]) {
-        return { backgroundColor: colorMap[cleanColor] };
-    }
-
+    if (colorMap[cleanColor]) return { backgroundColor: colorMap[cleanColor] };
     return defaultBlue;
   };
 
@@ -159,20 +138,14 @@ export default function BookingSystem() {
         <header className="sticky top-0 z-40 w-full bg-white/80 backdrop-blur-md border-b px-6 py-3 flex justify-between items-center">
           <div className="flex items-center gap-4">
             <div className="h-12 w-12 flex items-center justify-center overflow-hidden rounded-xl">
-              {siteSettings.logoUrl ? (
-                <img src={siteSettings.logoUrl} alt="Logo" className="h-full w-full object-contain" />
-              ) : (
-                <div className="bg-blue-600 p-2 text-white shadow-lg"><GraduationCap size={24} /></div>
-              )}
+              {siteSettings.logoUrl ? <img src={siteSettings.logoUrl} alt="Logo" className="h-full w-full object-contain" /> : <div className="bg-blue-600 p-2 text-white shadow-lg"><GraduationCap size={24} /></div>}
             </div>
             <div className="flex flex-col">
               <h1 className="text-sm md:text-base font-black uppercase tracking-tight text-slate-800 leading-none mb-1">{siteSettings.schoolName}</h1>
               <p className="text-[10px] md:text-xs font-bold uppercase tracking-widest text-blue-600 leading-none">{siteSettings.systemName}</p>
             </div>
           </div>
-          <Button variant="ghost" size="icon" onClick={() => isAdmin ? setShowAdminPanel(true) : setShowAdminLogin(true)} className="rounded-full">
-            <Settings size={20} className="text-slate-500" />
-          </Button>
+          <Button variant="ghost" size="icon" onClick={() => isAdmin ? setShowAdminPanel(true) : setShowAdminLogin(true)} className="rounded-full"><Settings size={20} className="text-slate-500" /></Button>
         </header>
 
         <div className="max-w-7xl mx-auto p-6 md:p-8 flex flex-col lg:flex-row gap-8">
@@ -184,15 +157,9 @@ export default function BookingSystem() {
               </div>
               <Calendar mode="single" selected={date} onSelect={setDate} className="p-0 flex justify-center border-none" />
               <div className="mt-8 pt-6 border-t border-slate-100 flex flex-col items-start">
-                <div className="flex items-center gap-2 mb-2">
-                  <Code2 size={12} className="text-blue-500" />
-                  <p className="text-[9px] font-black uppercase tracking-[0.2em] text-slate-400">Developer</p>
-                </div>
+                <div className="flex items-center gap-2 mb-2"><Code2 size={12} className="text-blue-500" /><p className="text-[9px] font-black uppercase tracking-[0.2em] text-slate-400">Developer</p></div>
                 <p className="text-[11px] font-black text-slate-700 uppercase tracking-tight mb-1">CIKGU JEYA</p>
-                <div className="flex items-center gap-1.5">
-                  <Heart size={10} className="text-red-400 fill-red-400" />
-                  <p className="text-[8px] font-bold text-slate-400 uppercase tracking-widest">v2.0 • 2026</p>
-                </div>
+                <div className="flex items-center gap-1.5"><Heart size={10} className="text-red-400 fill-red-400" /><p className="text-[8px] font-bold text-slate-400 uppercase tracking-widest">v2.0 • 2026</p></div>
               </div>
             </Card>
           </aside>
@@ -200,35 +167,17 @@ export default function BookingSystem() {
           <main className="flex-grow grid grid-cols-1 md:grid-cols-2 gap-6">
             {rooms.filter(r => r.status !== "Hidden").map(room => (
               <Card key={room.id} className="rounded-[32px] border-none shadow-sm overflow-hidden bg-white transition-all hover:shadow-md">
-                <div 
-                    className="p-5 text-white flex justify-between items-center transition-all duration-500"
-                    style={getHeaderStyle(room.color)}
-                >
-                  <div className="flex items-center gap-4">
-                    <div className="bg-white/20 p-3 rounded-2xl backdrop-blur-sm text-2xl">{room.icon}</div>
-                    <CardTitle className="text-xs font-black uppercase tracking-widest leading-none">{room.name}</CardTitle>
-                  </div>
+                <div className="p-5 text-white flex justify-between items-center transition-all duration-500" style={getHeaderStyle(room.color)}>
+                  <div className="flex items-center gap-4"><div className="bg-white/20 p-3 rounded-2xl backdrop-blur-sm text-2xl">{room.icon}</div><CardTitle className="text-xs font-black uppercase tracking-widest leading-none">{room.name}</CardTitle></div>
                   <Badge variant="outline" className="text-[9px] border-white/30 text-white font-bold px-3 py-1 rounded-full uppercase">{room.capacity} Pax</Badge>
                 </div>
                 <CardContent className="p-6 grid grid-cols-3 sm:grid-cols-5 gap-2">
                   {timeSlots.map(time => {
-                    const bookingDetail = bookings.find(b => {
-                        const matchRoom = String(b.room_name).trim() === String(room.name).trim();
-                        const matchDate = String(b.booking_date).trim() === normalizeDate(date);
-                        const slotMin = toMinutes(time);
-                        const startMin = toMinutes(b.start_time);
-                        const endMin = toMinutes(b.end_time);
-                        return matchRoom && matchDate && slotMin >= startMin && slotMin < endMin;
-                    });
-                    const isPast = isTimePast(time);
-                    const isBooked = !!bookingDetail;
+                    const bookingDetail = bookings.find(b => String(b.room_name).trim() === String(room.name).trim() && String(b.booking_date).trim() === normalizeDate(date) && toMinutes(time) >= toMinutes(b.start_time) && toMinutes(time) < toMinutes(b.end_time));
+                    const isPast = isTimePast(time); const isBooked = !!bookingDetail;
                     return (
                       <Tooltip key={time}>
-                        <TooltipTrigger asChild>
-                          <div className="w-full">
-                            <Button disabled={isBooked || isPast} className={`h-11 w-full rounded-xl text-[10px] font-black transition-all ${isBooked ? "bg-red-500 text-white opacity-100 shadow-lg" : isPast ? "bg-slate-100 text-slate-400 cursor-not-allowed" : "bg-slate-50 text-slate-500 hover:bg-blue-600 hover:text-white"}`} onClick={() => { if(!isBooked && !isPast) { setTempBooking({ ...tempBooking, room: room.name, startTime: time, name: "", purposeType: "", purposeDetail: "" }); setShowModal(true); } }}>{time}</Button>
-                          </div>
-                        </TooltipTrigger>
+                        <TooltipTrigger asChild><div className="w-full"><Button disabled={isBooked || isPast} className={`h-11 w-full rounded-xl text-[10px] font-black transition-all ${isBooked ? "bg-red-500 text-white opacity-100 shadow-lg" : isPast ? "bg-slate-100 text-slate-400 cursor-not-allowed" : "bg-slate-50 text-slate-500 hover:bg-blue-600 hover:text-white"}`} onClick={() => { if(!isBooked && !isPast) { setTempBooking({ ...tempBooking, room: room.name, startTime: time, name: "", purposeType: "", purposeDetail: "" }); setShowModal(true); } }}>{time}</Button></div></TooltipTrigger>
                         {isBooked && (
                           <TooltipContent side="top" className="bg-slate-900 text-white p-4 rounded-2xl shadow-2xl z-[100] max-w-[200px]">
                             <div className="space-y-2">
@@ -246,68 +195,32 @@ export default function BookingSystem() {
           </main>
         </div>
 
-        {/* MODAL & DIALOGS KEKAL SAMA SEPERTI SEBELUM INI UNTUK KELAJUAN */}
         <Dialog open={showModal} onOpenChange={setShowModal}>
           <DialogContent className="rounded-[40px] max-w-[400px] p-8 border-none shadow-2xl">
             <DialogHeader>
-              <DialogTitle className="text-xl font-black uppercase text-slate-800 flex items-center gap-2">
-                <Plus className="text-blue-600" size={24}/> {tempBooking.room}
-              </DialogTitle>
-              <DialogDescription className="text-[10px] font-black text-blue-600 bg-blue-50 w-fit px-4 py-1 rounded-full uppercase">
-                {normalizeDate(date)}
-              </DialogDescription>
+              <DialogTitle className="text-xl font-black uppercase text-slate-800 flex items-center gap-2"><Plus className="text-blue-600" size={24}/> {tempBooking.room}</DialogTitle>
+              <DialogDescription className="text-[10px] font-black text-blue-600 bg-blue-50 w-fit px-4 py-1 rounded-full uppercase">{normalizeDate(date)}</DialogDescription>
             </DialogHeader>
             <div className="space-y-5 mt-8">
-              <div className="space-y-1.5">
-                <Label className="text-[10px] font-black uppercase text-slate-400 ml-1">Nama Pemohon</Label>
-                <Input defaultValue={tempBooking.name} onBlur={e => setTempBooking({...tempBooking, name: e.target.value})} className="rounded-2xl h-12 bg-slate-50 border-none font-black" placeholder="Nama Guru" />
-              </div>
+              <div className="space-y-1.5"><Label className="text-[10px] font-black uppercase text-slate-400 ml-1">Nama Pemohon</Label><Input defaultValue={tempBooking.name} onBlur={e => setTempBooking({...tempBooking, name: e.target.value})} className="rounded-2xl h-12 bg-slate-50 border-none font-black" placeholder="Nama Guru" /></div>
               <div className="grid grid-cols-2 gap-4">
-                <div className="space-y-1.5">
-                  <Label className="text-[10px] font-black uppercase text-slate-400 ml-1 flex items-center gap-1"><Clock size={10}/> Masa Mula</Label>
-                  <div className="h-12 rounded-2xl bg-slate-100 flex items-center px-4 font-black text-slate-500 text-sm border-2 border-dashed border-slate-200">{tempBooking.startTime}</div>
-                </div>
-                <div className="space-y-1.5">
-                  <Label className="text-[10px] font-black uppercase text-blue-600 ml-1 flex items-center gap-1"><Clock size={10}/> Masa Tamat</Label>
-                  <select className="w-full h-12 rounded-2xl bg-white border-2 border-blue-100 text-[11px] font-black px-3 outline-none" value={tempBooking.endTime} onChange={e => setTempBooking({...tempBooking, endTime: e.target.value})}>
-                    <option value="">PILIH</option>
-                    {timeSlots.filter(t => toMinutes(t) > toMinutes(tempBooking.startTime)).map(t => <option key={t} value={t}>{t}</option>)}
-                    <option value="15:00">15:00</option><option value="15:30">15:30</option><option value="16:00">16:00</option>
-                  </select>
-                </div>
+                <div className="space-y-1.5"><Label className="text-[10px] font-black uppercase text-slate-400 ml-1 flex items-center gap-1"><Clock size={10}/> Masa Mula</Label><div className="h-12 rounded-2xl bg-slate-100 flex items-center px-4 font-black text-slate-500 text-sm border-2 border-dashed border-slate-200">{tempBooking.startTime}</div></div>
+                <div className="space-y-1.5"><Label className="text-[10px] font-black uppercase text-blue-600 ml-1 flex items-center gap-1"><Clock size={10}/> Masa Tamat</Label><select className="w-full h-12 rounded-2xl bg-white border-2 border-blue-100 text-[11px] font-black px-3 outline-none" value={tempBooking.endTime} onChange={e => setTempBooking({...tempBooking, endTime: e.target.value})}><option value="">PILIH</option>{timeSlots.filter(t => toMinutes(t) > toMinutes(tempBooking.startTime)).map(t => <option key={t} value={t}>{t}</option>)}<option value="15:00">15:00</option><option value="15:30">15:30</option><option value="16:00">16:00</option></select></div>
               </div>
-              <div className="space-y-1.5">
-                <Label className="text-[10px] font-black uppercase text-slate-400 ml-1">Tujuan</Label>
-                <select className="w-full h-12 rounded-2xl bg-slate-50 text-[11px] font-black px-3 outline-none" value={tempBooking.purposeType} onChange={e => setTempBooking({...tempBooking, purposeType: e.target.value})}>
-                  <option value="">PILIH TUJUAN</option>
-                  {purposes.map(p => <option key={p} value={p}>{p.toUpperCase()}</option>)}
-                </select>
-              </div>
-              <Button onClick={handleBooking} disabled={loading} className="w-full h-14 rounded-[20px] bg-blue-600 font-black uppercase text-xs tracking-widest shadow-xl">
-                {loading ? <Loader2 className="animate-spin" /> : "Sahkan Tempahan"}
-              </Button>
+              <div className="space-y-1.5"><Label className="text-[10px] font-black uppercase text-slate-400 ml-1">Tujuan</Label><select className="w-full h-12 rounded-2xl bg-slate-50 text-[11px] font-black px-3 outline-none" value={tempBooking.purposeType} onChange={e => setTempBooking({...tempBooking, purposeType: e.target.value})}><option value="">PILIH TUJUAN</option>{purposes.map(p => <option key={p} value={p}>{p.toUpperCase()}</option>)}</select></div>
+              {/* MAKLUMAT KELAS KEMBALI DI SINI */}
+              <div className="space-y-1.5"><Label className="text-[10px] font-black uppercase text-slate-400 ml-1">Maklumat Kelas / Catatan</Label><Input defaultValue={tempBooking.purposeDetail} onBlur={e => setTempBooking({...tempBooking, purposeDetail: e.target.value})} className="rounded-2xl h-12 bg-slate-50 border-none font-black" placeholder="Cth: 5 Arif / Robotik Club" /></div>
+              <Button onClick={handleBooking} disabled={loading} className="w-full h-14 rounded-[20px] bg-blue-600 font-black uppercase text-xs tracking-widest shadow-xl">{loading ? <Loader2 className="animate-spin" /> : "Sahkan Tempahan"}</Button>
             </div>
           </DialogContent>
         </Dialog>
 
         <Dialog open={bookingSuccess} onOpenChange={setBookingSuccess}>
-          <DialogContent className="rounded-[40px] max-w-[320px] p-8 text-center border-none shadow-2xl">
-            <div className="flex flex-col items-center py-4">
-              <div className="bg-emerald-100 p-4 rounded-full mb-4 animate-bounce"><CheckCircle2 size={48} className="text-emerald-600" /></div>
-              <h3 className="text-xl font-black uppercase text-slate-800 mb-2">Berjaya!</h3>
-              <Button onClick={() => setBookingSuccess(false)} className="mt-8 w-full bg-slate-900 rounded-2xl h-12 font-black uppercase text-[10px]">Tutup</Button>
-            </div>
-          </DialogContent>
+          <DialogContent className="rounded-[40px] max-w-[320px] p-8 text-center border-none shadow-2xl"><div className="flex flex-col items-center py-4"><div className="bg-emerald-100 p-4 rounded-full mb-4 animate-bounce"><CheckCircle2 size={48} className="text-emerald-600" /></div><h3 className="text-xl font-black uppercase text-slate-800 mb-2">Berjaya!</h3><Button onClick={() => setBookingSuccess(false)} className="mt-8 w-full bg-slate-900 rounded-2xl h-12 font-black uppercase text-[10px]">Tutup</Button></div></DialogContent>
         </Dialog>
 
         <Dialog open={showAdminLogin} onOpenChange={setShowAdminLogin}>
-          <DialogContent className="rounded-[40px] max-w-[320px] p-10 text-center border-none shadow-2xl">
-            <DialogTitle className="text-2xl font-black uppercase tracking-tighter">ADMIN LOGIN</DialogTitle>
-            <div className="mt-6 space-y-4">
-              <Input type="password" value={passwordInput} onChange={e => setPasswordInput(e.target.value)} onKeyDown={e => e.key === 'Enter' && (passwordInput === "admin123" ? (setIsAdmin(true), setShowAdminLogin(false), setShowAdminPanel(true), setPasswordInput("")) : alert("Salah!"))} className="text-center font-black h-14 bg-slate-50 border-none rounded-2xl text-lg tracking-[0.4em]" placeholder="••••" />
-              <Button onClick={() => passwordInput === "admin123" ? (setIsAdmin(true), setShowAdminLogin(false), setShowAdminPanel(true), setPasswordInput("")) : alert("Salah!")} className="w-full h-14 rounded-2xl bg-slate-900 font-black uppercase text-[10px] tracking-widest shadow-xl">Masuk</Button>
-            </div>
-          </DialogContent>
+          <DialogContent className="rounded-[40px] max-w-[320px] p-10 text-center border-none shadow-2xl"><DialogTitle className="text-2xl font-black uppercase tracking-tighter">ADMIN LOGIN</DialogTitle><div className="mt-6 space-y-4"><Input type="password" value={passwordInput} onChange={e => setPasswordInput(e.target.value)} onKeyDown={e => e.key === 'Enter' && (passwordInput === "admin123" ? (setIsAdmin(true), setShowAdminLogin(false), setShowAdminPanel(true), setPasswordInput("")) : alert("Salah!"))} className="text-center font-black h-14 bg-slate-50 border-none rounded-2xl text-lg tracking-[0.4em]" placeholder="••••" /><Button onClick={() => passwordInput === "admin123" ? (setIsAdmin(true), setShowAdminLogin(false), setShowAdminPanel(true), setPasswordInput("")) : alert("Salah!")} className="w-full h-14 rounded-2xl bg-slate-900 font-black uppercase text-[10px] tracking-widest shadow-xl">Masuk</Button></div></DialogContent>
         </Dialog>
 
         <Dialog open={showAdminPanel} onOpenChange={setShowAdminPanel}>
@@ -321,22 +234,10 @@ export default function BookingSystem() {
               </TabsList>
               <TabsContent value="rooms" className="flex-grow overflow-y-auto p-8 pt-4">
                 <Button onClick={() => setIsEditingRoom({ name: "", icon: "🏢", capacity: "30", color: "from-blue-600 to-blue-700", status: "Active" })} className="mb-6 bg-blue-600 text-[10px] font-black uppercase rounded-xl px-6 h-11 shadow-lg">+ Tambah Bilik</Button>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  {rooms.map((r, i) => (
-                    <div key={i} className="flex items-center justify-between p-5 bg-slate-50 rounded-[24px] border border-slate-100">
-                      <div className="flex items-center gap-4"><span className="text-3xl">{r.icon}</span><p className="font-black text-xs uppercase text-slate-700">{r.name}</p></div>
-                      <div className="flex gap-1">
-                        <Button variant="ghost" onClick={() => setIsEditingRoom(r)} className="text-blue-500 rounded-xl"><Edit3 size={18}/></Button>
-                        <Button variant="ghost" onClick={() => { if(confirm('Padam?')) saveAdminAction("deleteRoom", r) }} className="text-red-400 rounded-xl"><Trash2 size={18}/></Button>
-                      </div>
-                    </div>
-                  ))}
-                </div>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">{rooms.map((r, i) => (<div key={i} className="flex items-center justify-between p-5 bg-slate-50 rounded-[24px] border border-slate-100"><div className="flex items-center gap-4"><span className="text-3xl">{r.icon}</span><p className="font-black text-xs uppercase text-slate-700">{r.name}</p></div><div className="flex gap-1"><Button variant="ghost" onClick={() => setIsEditingRoom(r)} className="text-blue-500 rounded-xl"><Edit3 size={18}/></Button><Button variant="ghost" onClick={() => { if(confirm('Padam?')) saveAdminAction("deleteRoom", r) }} className="text-red-400 rounded-xl"><Trash2 size={18}/></Button></div></div>))}</div>
               </TabsContent>
               <TabsContent value="purposes" className="p-8"><div className="space-y-4">{purposes.map((p, i) => (<div key={i} className="p-4 bg-slate-50 rounded-2xl flex justify-between uppercase font-black text-xs">{p}<Button variant="ghost" onClick={() => saveAdminAction("updatePurposes", purposes.filter((_, idx) => idx !== i))} className="text-red-400"><Trash2 size={18}/></Button></div>))}</div></TabsContent>
-              <TabsContent value="data" className="p-8 h-full overflow-y-auto">
-                <div className="space-y-3">{bookings.slice(0).reverse().map((b, i) => (<div key={i} className="p-4 bg-white rounded-[24px] border border-slate-100 flex justify-between items-center shadow-sm"><div><p className="font-black text-[11px] text-blue-600 uppercase leading-none">{b.user_name}</p><p className="text-[10px] text-slate-400 font-bold uppercase mt-2">{b.room_name} | {b.booking_date}</p></div><Button variant="ghost" onClick={() => saveAdminAction("deleteBooking", { row_index: b.row_index })} className="text-red-400 rounded-xl h-12 w-12"><Trash2 size={20}/></Button></div>))}</div>
-              </TabsContent>
+              <TabsContent value="data" className="p-8 h-full overflow-y-auto"><div className="space-y-3">{bookings.slice(0).reverse().map((b, i) => (<div key={i} className="p-4 bg-white rounded-[24px] border border-slate-100 flex justify-between items-center shadow-sm"><div><p className="font-black text-[11px] text-blue-600 uppercase leading-none">{b.user_name}</p><p className="text-[10px] text-slate-400 font-bold uppercase mt-2">{b.room_name} | {b.booking_date}</p></div><Button variant="ghost" onClick={() => saveAdminAction("deleteBooking", { row_index: b.row_index })} className="text-red-400 rounded-xl h-12 w-12"><Trash2 size={20}/></Button></div>))}</div></TabsContent>
             </Tabs>
           </DialogContent>
         </Dialog>
