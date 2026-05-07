@@ -240,161 +240,25 @@ export default function BookingSystem() {
               <DialogTitle className="text-xl font-black uppercase text-slate-800 tracking-tight flex items-center gap-2">
                 <Plus className="text-blue-600" size={24}/> {tempBooking.room}
               </DialogTitle>
-              <DialogDescription className="text-[10px] font-black text-blue-600 bg-blue-50 w-fit px-4 py-1 rounded-full uppercase">
+              <DialogHeader className="sr-only">
+                <DialogDescription>Borang tempahan bilik khas</DialogDescription>
+              </DialogHeader>
+              <div className="text-[10px] font-black text-blue-600 bg-blue-50 w-fit px-4 py-1 rounded-full uppercase">
                 {normalizeDate(date)}
-              </DialogDescription>
+              </div>
             </DialogHeader>
             <div className="space-y-5 mt-8">
-              <div className="space-y-1.5"><Label className="text-[10px] font-black uppercase text-slate-400 ml-1">Nama Pemohon</Label><Input value={tempBooking.name} onChange={e => setTempBooking({...tempBooking, name: e.target.value})} className="rounded-2xl h-12 bg-slate-50 border-none font-black" placeholder="Nama Guru" /></div>
+              {/* INPUT NAMA: DIUBAH KEPADA DEFAULTVALUE + ONBLUR UNTUK KELAJUAN */}
+              <div className="space-y-1.5">
+                <Label className="text-[10px] font-black uppercase text-slate-400 ml-1">Nama Pemohon</Label>
+                <Input 
+                  defaultValue={tempBooking.name} 
+                  onBlur={e => setTempBooking({...tempBooking, name: e.target.value})} 
+                  className="rounded-2xl h-12 bg-slate-50 border-none font-black" 
+                  placeholder="Nama Guru" 
+                />
+              </div>
               
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-1.5">
-                  <Label className="text-[10px] font-black uppercase text-slate-400 ml-1 flex items-center gap-1"><Clock size={10}/> Masa Mula</Label>
-                  <div className="h-12 rounded-2xl bg-slate-100 flex items-center px-4 font-black text-slate-500 text-sm border-2 border-dashed border-slate-200">
-                    {tempBooking.startTime}
-                  </div>
-                </div>
-                <div className="space-y-1.5">
-                  <Label className="text-[10px] font-black uppercase text-blue-600 ml-1 flex items-center gap-1"><Clock size={10}/> Masa Tamat</Label>
-                  <select className="w-full h-12 rounded-2xl bg-white border-2 border-blue-100 text-[11px] font-black px-3 outline-none focus:border-blue-500 transition-all shadow-sm" value={tempBooking.endTime} onChange={e => setTempBooking({...tempBooking, endTime: e.target.value})}>
-                    <option value="">PILIH</option>
-                    {timeSlots.filter(t => toMinutes(t) > toMinutes(tempBooking.startTime)).map(t => <option key={t} value={t}>{t}</option>)}
-                    <option value="15:00">15:00</option>
-                    <option value="15:30">15:30</option>
-                    <option value="16:00">16:00</option>
-                  </select>
-                </div>
-              </div>
-
-              <div className="space-y-1.5">
-                <Label className="text-[10px] font-black uppercase text-slate-400 ml-1">Tujuan / Aktiviti</Label>
-                <select className="w-full h-12 rounded-2xl bg-slate-50 text-[11px] font-black px-3 outline-none" value={tempBooking.purposeType} onChange={e => setTempBooking({...tempBooking, purposeType: e.target.value})}>
-                  <option value="">PILIH TUJUAN</option>
-                  {purposes.map(p => <option key={p} value={p}>{p.toUpperCase()}</option>)}
-                </select>
-              </div>
-
-              <div className="space-y-1.5">
-                <Label className="text-[10px] font-black uppercase text-slate-400 ml-1">Catatan Tambahan (Kelas/Kumpulan)</Label>
-                <Input value={tempBooking.purposeDetail} onChange={e => setTempBooking({...tempBooking, purposeDetail: e.target.value})} className="rounded-2xl h-12 bg-slate-50 border-none font-black" placeholder="Cth: 5 Arif / Robotik Club" />
-              </div>
-
-              <Button onClick={handleBooking} disabled={loading} className="w-full h-14 rounded-[20px] bg-blue-600 font-black uppercase text-xs tracking-widest shadow-xl shadow-blue-100 hover:bg-blue-700 transition-all active:scale-95">
-                {loading ? <Loader2 className="animate-spin" /> : "Sahkan Tempahan"}
-              </Button>
-            </div>
-          </DialogContent>
-        </Dialog>
-
-        {/* DIALOG: NOTIFIKASI BERJAYA (FIXED) */}
-        <Dialog open={bookingSuccess} onOpenChange={setBookingSuccess}>
-          <DialogContent className="rounded-[40px] max-w-[320px] p-8 text-center border-none shadow-2xl overflow-hidden">
-            <DialogHeader className="sr-only">
-              <DialogTitle>Tempahan Berjaya</DialogTitle>
-              <DialogDescription>Notifikasi pengesahan tempahan bilik</DialogDescription>
-            </DialogHeader>
-            <div className="absolute top-0 left-0 w-full h-2 bg-emerald-500" />
-            <div className="flex flex-col items-center py-4">
-              <div className="bg-emerald-100 p-4 rounded-full mb-4 animate-bounce">
-                <CheckCircle2 size={48} className="text-emerald-600" />
-              </div>
-              <h3 className="text-xl font-black uppercase text-slate-800 mb-2">Tempahan Berjaya!</h3>
-              <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest leading-relaxed">Rekod anda telah disimpan ke dalam pangkalan data sekolah.</p>
-              <Button onClick={() => setBookingSuccess(false)} className="mt-8 w-full bg-slate-900 rounded-2xl h-12 font-black uppercase text-[10px]">Tutup</Button>
-            </div>
-          </DialogContent>
-        </Dialog>
-
-        {/* ADMIN LOGIN (FIXED) */}
-        <Dialog open={showAdminLogin} onOpenChange={setShowAdminLogin}>
-          <DialogContent className="rounded-[40px] max-w-[320px] p-10 text-center border-none shadow-2xl">
-            <DialogHeader className="items-center">
-              <div className="bg-blue-100 p-5 rounded-3xl text-blue-600 mb-2"><Lock size={32} /></div>
-              <DialogTitle className="text-2xl font-black uppercase tracking-tighter">ADMIN LOGIN</DialogTitle>
-              <DialogDescription className="sr-only">Sila masukkan kata laluan admin</DialogDescription>
-            </DialogHeader>
-            <div className="mt-6 space-y-4">
-              <Input type="password" value={passwordInput} onChange={e => setPasswordInput(e.target.value)} onKeyDown={e => e.key === 'Enter' && (passwordInput === "admin123" ? (setIsAdmin(true), setShowAdminLogin(false), setShowAdminPanel(true), setPasswordInput("")) : alert("Salah!"))} className="text-center font-black h-14 bg-slate-50 border-none rounded-2xl text-lg tracking-[0.4em]" placeholder="••••" />
-              <Button onClick={() => passwordInput === "admin123" ? (setIsAdmin(true), setShowAdminLogin(false), setShowAdminPanel(true), setPasswordInput("")) : alert("Salah!")} className="w-full h-14 rounded-2xl bg-slate-900 font-black uppercase text-[10px] tracking-widest shadow-xl">Masuk Panel</Button>
-            </div>
-          </DialogContent>
-        </Dialog>
-
-        {/* ADMIN PANEL */}
-        <Dialog open={showAdminPanel} onOpenChange={setShowAdminPanel}>
-          <DialogContent className="max-w-4xl h-[85vh] flex flex-col p-0 rounded-[40px] overflow-hidden border-none shadow-2xl">
-            <DialogHeader className="p-8 bg-slate-900 text-white shrink-0">
-              <DialogTitle className="font-black uppercase tracking-tighter flex items-center gap-3 text-2xl"><Settings size={28} className="text-blue-500"/> KONFIGURASI ADMIN</DialogTitle>
-              <DialogDescription className="text-slate-400 text-[10px] uppercase font-bold tracking-widest mt-1">Sistem Pengurusan Bilik Khas</DialogDescription>
-            </DialogHeader>
-            <Tabs defaultValue="rooms" className="flex-grow flex flex-col overflow-hidden">
-              <TabsList className="mx-8 mt-6 bg-slate-100 p-1.5 rounded-2xl w-fit border border-slate-200">
-                <TabsTrigger value="rooms" className="text-[10px] font-black uppercase px-6">Bilik</TabsTrigger>
-                <TabsTrigger value="purposes" className="text-[10px] font-black uppercase px-6">Tujuan</TabsTrigger>
-                <TabsTrigger value="settings" className="text-[10px] font-black uppercase px-6">Header</TabsTrigger>
-                <TabsTrigger value="data" className="text-[10px] font-black uppercase px-6 text-red-600">Rekod</TabsTrigger>
-              </TabsList>
-              <TabsContent value="rooms" className="flex-grow overflow-y-auto p-8 pt-4">
-                <Button onClick={() => setIsEditingRoom({ name: "", icon: "🏢", capacity: "30", color: "from-blue-600 to-blue-700", status: "Active" })} className="mb-6 bg-blue-600 text-[10px] font-black uppercase rounded-xl px-6 h-11 shadow-lg shadow-blue-100">+ Tambah Bilik</Button>
-                {isEditingRoom && (
-                  <Card className="p-5 mb-8 border-2 border-blue-100 bg-blue-50/50 rounded-[24px] grid grid-cols-2 md:grid-cols-5 gap-4 animate-in slide-in-from-top-2">
-                    <div className="space-y-1"><Label className="text-[10px] font-black uppercase text-slate-500">Nama</Label><Input value={isEditingRoom.name} onChange={e => { const name = e.target.value; const assets = autoAssignAssets(name); setIsEditingRoom({ ...isEditingRoom, name, icon: assets.icon, color: assets.color }); }} className="h-10 rounded-xl bg-white border-slate-200" placeholder="Cth: Makmal 1" /></div>
-                    <div className="space-y-1"><Label className="text-[10px] font-black uppercase text-slate-500">Ikon</Label><Input value={isEditingRoom.icon} onChange={e=>setIsEditingRoom({...isEditingRoom, icon:e.target.value})} className="h-10 rounded-xl bg-white border-slate-200" /></div>
-                    <div className="space-y-1"><Label className="text-[10px] font-black uppercase text-slate-500">Pax</Label><Input value={isEditingRoom.capacity} onChange={e=>setIsEditingRoom({...isEditingRoom, capacity:e.target.value})} className="h-10 rounded-xl bg-white border-slate-200" /></div>
-                    <div className="space-y-1"><Label className="text-[10px] font-black uppercase text-slate-500">Warna</Label><Input value={isEditingRoom.color} onChange={e=>setIsEditingRoom({...isEditingRoom, color:e.target.value})} className="h-10 rounded-xl bg-white border-slate-200" /></div>
-                    <div className="flex items-end gap-2"><Button onClick={()=>saveAdminAction("updateRooms", isEditingRoom)} className="bg-emerald-600 h-10 w-full rounded-xl"><Save size={18}/></Button><Button onClick={()=>setIsEditingRoom(null)} variant="outline" className="h-10 rounded-xl">X</Button></div>
-                  </Card>
-                )}
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  {rooms.map((r, i) => (
-                    <div key={i} className="flex items-center justify-between p-5 bg-slate-50 rounded-[24px] border border-slate-100 hover:border-blue-200 transition-all">
-                      <div className="flex items-center gap-4">
-                        <span className="text-3xl">{r.icon}</span>
-                        <div><p className="font-black text-xs uppercase text-slate-700">{r.name}</p><Badge className="text-[8px] mt-1 bg-emerald-100 text-emerald-600 border-none px-2">{r.status}</Badge></div>
-                      </div>
-                      <div className="flex gap-1">
-                        <Button variant="ghost" size="sm" onClick={() => setIsEditingRoom(r)} className="text-blue-500 hover:bg-blue-50 rounded-xl"><Edit3 size={18}/></Button>
-                        <Button variant="ghost" size="sm" onClick={() => { if(confirm('Padam bilik?')) saveAdminAction("deleteRoom", r) }} className="text-red-400 hover:bg-red-50 rounded-xl"><Trash2 size={18}/></Button>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </TabsContent>
-              <TabsContent value="purposes" className="flex-grow overflow-y-auto p-8 pt-4">
-                <div className="max-w-md space-y-6">
-                  <div className="space-y-2">
-                    <Label className="text-[10px] font-black uppercase text-slate-400 tracking-widest ml-1">Tambah Tujuan Baru</Label>
-                    <div className="flex gap-3">
-                      <Input placeholder="Cth: PdPc / Taklimat" value={newPurposeInput} onChange={e => setNewPurposeInput(e.target.value)} className="rounded-2xl h-12 border-slate-200 font-bold" />
-                      <Button onClick={() => { if(newPurposeInput) { saveAdminAction("updatePurposes", [...purposes, newPurposeInput]); setNewPurposeInput(""); } }} className="bg-blue-600 h-12 w-12 rounded-2xl shadow-lg shadow-blue-100"><Plus/></Button>
-                    </div>
-                  </div>
-                  <div className="space-y-3">
-                    {purposes.map((p, i) => (
-                      <div key={i} className="flex justify-between items-center p-4 bg-slate-50 rounded-2xl border border-slate-100 text-[11px] font-black uppercase text-slate-700">
-                        {p}
-                        <Button variant="ghost" onClick={() => saveAdminAction("updatePurposes", purposes.filter((_, idx) => idx !== i))} className="text-red-400 hover:bg-red-50 rounded-xl"><Trash2 size={18}/></Button>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              </TabsContent>
-              <TabsContent value="settings" className="p-8 h-full overflow-y-auto">
-                <div className="max-w-sm space-y-6 pb-10">
-                  <div className="space-y-2"><Label className="text-[10px] font-black uppercase text-slate-400 tracking-widest ml-1">Nama Sekolah</Label><Input value={siteSettings.schoolName} onChange={e => setSiteSettings({...siteSettings, schoolName: e.target.value})} className="rounded-2xl h-12 border-slate-200 font-black text-xs uppercase" /></div>
-                  <div className="space-y-2"><Label className="text-[10px] font-black uppercase text-slate-400 tracking-widest ml-1 text-blue-500">Nama Sistem</Label><Input value={siteSettings.systemName} onChange={e => setSiteSettings({...siteSettings, systemName: e.target.value})} className="rounded-2xl h-12 border-blue-100 font-black text-xs text-blue-600" /></div>
-                  <div className="space-y-2"><Label className="text-[10px] font-black uppercase text-slate-400 tracking-widest ml-1">Drive ID Logo</Label><Input value={siteSettings.logoId} onChange={e => setSiteSettings({...siteSettings, logoId: e.target.value})} className="rounded-2xl h-12 border-slate-200 font-mono text-[10px]" /></div>
-                  <Button onClick={() => saveAdminAction("updateSettings", siteSettings)} className="w-full bg-slate-900 font-black uppercase text-[10px] h-14 rounded-2xl shadow-xl mt-6">Simpan Semua Tetapan</Button>
-                </div>
-              </TabsContent>
-              <TabsContent value="data" className="flex-grow overflow-y-auto p-8 pt-4">
-                <div className="sticky top-0 bg-white pb-6 z-20"><Card className="p-6 bg-red-50 border-2 border-red-100 rounded-[28px] flex justify-between items-center"><div className="flex items-center gap-4 text-red-600 font-black text-sm uppercase"><AlertTriangle size={32}/> PADAM SEMUA DATA</div><Button variant="destructive" onClick={() => { if(prompt("Taip 'RESET' untuk sahkan") === "RESET") saveAdminAction("clearAllBookings", {}) }} className="rounded-2xl font-black text-[10px] uppercase h-12 px-8 shadow-xl">Clear All</Button></Card></div>
-                <div className="space-y-3 mt-2">{bookings.slice(0).reverse().map((b, i) => (<div key={i} className="p-4 bg-white rounded-[24px] border border-slate-100 flex justify-between items-center shadow-sm"><div><p className="font-black text-[11px] text-blue-600 uppercase leading-none">{b.user_name}</p><p className="text-[10px] text-slate-400 font-bold uppercase mt-2">{b.room_name} | {b.booking_date} | {b.start_time}-{b.end_time}</p></div><Button variant="ghost" onClick={() => saveAdminAction("deleteBooking", { row_index: b.row_index })} className="text-red-400 hover:bg-red-50 rounded-xl h-12 w-12"><Trash2 size={20}/></Button></div>))}</div>
-              </TabsContent>
-            </Tabs>
-          </DialogContent>
-        </Dialog>
-      </div>
-    </TooltipProvider>
-  );
-}
+                  <Label className="text-[10px] font-black uppercase text-slate-400 ml-1 flex items-center gap
