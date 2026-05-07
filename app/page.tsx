@@ -105,13 +105,27 @@ export default function BookingSystem() {
     } catch (e) { setLoading(false); }
   };
 
+  // Fungsi pembantu untuk tukar kod Tailwind Google Sheet ke CSS Warna
+  const getHeaderStyle = (colorStr: string) => {
+    if (!colorStr) return { backgroundColor: '#2563eb' };
+    if (colorStr.startsWith('bg-')) {
+        const color = colorStr.split('-')[1]; // red, blue, etc
+        return { backgroundColor: color };
+    }
+    if (colorStr.includes('from-') && colorStr.includes('to-')) {
+        const parts = colorStr.split(' ');
+        const from = parts[0].replace('from-', '').replace('-600', '').replace('-500', '');
+        const to = parts[1].replace('to-', '').replace('-700', '').replace('-600', '');
+        return { background: `linear-gradient(to bottom right, ${from}, ${to})` };
+    }
+    return { backgroundColor: '#2563eb' };
+  };
+
   if (!mounted) return null;
 
   return (
     <TooltipProvider delayDuration={0}>
       <div className="min-h-screen bg-[#F8FAFC] font-sans pb-10">
-        
-        {/* HEADER */}
         <header className="sticky top-0 z-40 w-full bg-white/80 backdrop-blur-md border-b px-6 py-3 flex justify-between items-center">
           <div className="flex items-center gap-4">
             <div className="h-12 w-12 flex items-center justify-center overflow-hidden rounded-xl">
@@ -132,7 +146,6 @@ export default function BookingSystem() {
         </header>
 
         <div className="max-w-7xl mx-auto p-6 md:p-8 flex flex-col lg:flex-row gap-8">
-          {/* SIDEBAR */}
           <aside className="w-full lg:w-[320px] shrink-0 space-y-6">
             <Card className="rounded-[28px] p-5 border-none shadow-sm bg-white sticky top-24">
               <div className="mb-4 text-center">
@@ -154,12 +167,14 @@ export default function BookingSystem() {
             </Card>
           </aside>
 
-          {/* MAIN GRID */}
           <main className="flex-grow grid grid-cols-1 md:grid-cols-2 gap-6">
             {rooms.filter(r => r.status !== "Hidden").map(room => (
               <Card key={room.id} className="rounded-[32px] border-none shadow-sm overflow-hidden bg-white transition-all hover:shadow-md">
-                {/* PEMBETULAN WARNA HEADER DI SINI */}
-                <div className={`p-5 bg-gradient-to-br ${room.color ? (room.color.includes('from-') ? room.color : 'bg-blue-600') : 'from-blue-600 to-blue-700'} text-white flex justify-between items-center`}>
+                {/* PAKSA WARNA GUNA INLINE STYLE BERDASARKAN GOOGLE SHEET */}
+                <div 
+                    className="p-5 text-white flex justify-between items-center"
+                    style={getHeaderStyle(room.color)}
+                >
                   <div className="flex items-center gap-4">
                     <div className="bg-white/20 p-3 rounded-2xl backdrop-blur-sm text-2xl">{room.icon}</div>
                     <CardTitle className="text-xs font-black uppercase tracking-widest leading-none">{room.name}</CardTitle>
@@ -202,7 +217,6 @@ export default function BookingSystem() {
           </main>
         </div>
 
-        {/* MODAL TEMPAHAN */}
         <Dialog open={showModal} onOpenChange={setShowModal}>
           <DialogContent className="rounded-[40px] max-w-[400px] p-8 border-none shadow-2xl">
             <DialogHeader>
@@ -246,7 +260,6 @@ export default function BookingSystem() {
           </DialogContent>
         </Dialog>
 
-        {/* NOTIFIKASI BERJAYA */}
         <Dialog open={bookingSuccess} onOpenChange={setBookingSuccess}>
           <DialogContent className="rounded-[40px] max-w-[320px] p-8 text-center border-none shadow-2xl">
             <div className="flex flex-col items-center py-4">
@@ -257,7 +270,6 @@ export default function BookingSystem() {
           </DialogContent>
         </Dialog>
 
-        {/* ADMIN LOGIN */}
         <Dialog open={showAdminLogin} onOpenChange={setShowAdminLogin}>
           <DialogContent className="rounded-[40px] max-w-[320px] p-10 text-center border-none shadow-2xl">
             <DialogTitle className="text-2xl font-black uppercase tracking-tighter">ADMIN LOGIN</DialogTitle>
@@ -268,7 +280,6 @@ export default function BookingSystem() {
           </DialogContent>
         </Dialog>
 
-        {/* ADMIN PANEL */}
         <Dialog open={showAdminPanel} onOpenChange={setShowAdminPanel}>
           <DialogContent className="max-w-4xl h-[85vh] flex flex-col p-0 rounded-[40px] overflow-hidden border-none shadow-2xl">
             <div className="p-8 bg-slate-900 text-white shrink-0 font-black uppercase tracking-tighter flex items-center gap-3 text-2xl"><Settings size={28} className="text-blue-500"/> KONFIGURASI ADMIN</div>
