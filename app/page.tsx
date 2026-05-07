@@ -105,20 +105,50 @@ export default function BookingSystem() {
     } catch (e) { setLoading(false); }
   };
 
-  // Fungsi pembantu untuk tukar kod Tailwind Google Sheet ke CSS Warna
+  // FUNGSI WARNA BARU YANG LEBIH PINTAR
   const getHeaderStyle = (colorStr: string) => {
-    if (!colorStr) return { backgroundColor: '#2563eb' };
+    const defaultBlue = { backgroundColor: '#2563eb' };
+    if (!colorStr) return defaultBlue;
+
+    const colorMap: { [key: string]: string } = {
+      'red': '#dc2626',
+      'blue': '#2563eb',
+      'green': '#16a34a',
+      'orange': '#ea580c',
+      'amber': '#d97706',
+      'yellow': '#ca8a04',
+      'purple': '#9333ea',
+      'pink': '#db2777',
+      'slate': '#475569',
+      'gray': '#4b5563',
+      'emerald': '#059669',
+      'indigo': '#4f46e5',
+      'sky': '#0284c7'
+    };
+
+    // 1. Jika cikgu guna Tailwind 'bg-red-600'
     if (colorStr.startsWith('bg-')) {
-        const color = colorStr.split('-')[1]; // red, blue, etc
-        return { backgroundColor: color };
+        const colorName = colorStr.split('-')[1];
+        return { backgroundColor: colorMap[colorName] || colorMap['blue'] };
     }
-    if (colorStr.includes('from-') && colorStr.includes('to-')) {
+
+    // 2. Jika cikgu guna Tailwind 'from-red-600 to-red-700'
+    if (colorStr.includes('from-')) {
         const parts = colorStr.split(' ');
-        const from = parts[0].replace('from-', '').replace('-600', '').replace('-500', '');
-        const to = parts[1].replace('to-', '').replace('-700', '').replace('-600', '');
-        return { background: `linear-gradient(to bottom right, ${from}, ${to})` };
+        const fromName = parts[0].replace('from-', '').split('-')[0];
+        const toName = parts[1]?.replace('to-', '').split('-')[0] || fromName;
+        const fromHex = colorMap[fromName] || '#2563eb';
+        const toHex = colorMap[toName] || '#1e40af';
+        return { background: `linear-gradient(to bottom right, ${fromHex}, ${toHex})` };
     }
-    return { backgroundColor: '#2563eb' };
+
+    // 3. Jika cikgu cuma tulis 'red' atau 'blue' dalam Sheets
+    const cleanColor = colorStr.toLowerCase().trim();
+    if (colorMap[cleanColor]) {
+        return { backgroundColor: colorMap[cleanColor] };
+    }
+
+    return defaultBlue;
   };
 
   if (!mounted) return null;
@@ -170,9 +200,8 @@ export default function BookingSystem() {
           <main className="flex-grow grid grid-cols-1 md:grid-cols-2 gap-6">
             {rooms.filter(r => r.status !== "Hidden").map(room => (
               <Card key={room.id} className="rounded-[32px] border-none shadow-sm overflow-hidden bg-white transition-all hover:shadow-md">
-                {/* PAKSA WARNA GUNA INLINE STYLE BERDASARKAN GOOGLE SHEET */}
                 <div 
-                    className="p-5 text-white flex justify-between items-center"
+                    className="p-5 text-white flex justify-between items-center transition-all duration-500"
                     style={getHeaderStyle(room.color)}
                 >
                   <div className="flex items-center gap-4">
@@ -217,6 +246,7 @@ export default function BookingSystem() {
           </main>
         </div>
 
+        {/* MODAL & DIALOGS KEKAL SAMA SEPERTI SEBELUM INI UNTUK KELAJUAN */}
         <Dialog open={showModal} onOpenChange={setShowModal}>
           <DialogContent className="rounded-[40px] max-w-[400px] p-8 border-none shadow-2xl">
             <DialogHeader>
