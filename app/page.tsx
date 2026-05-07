@@ -12,7 +12,7 @@ import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/comp
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { 
   GraduationCap, Loader2, BookOpen, Settings, Lock, 
-  Trash2, Edit3, Plus, Save, AlertTriangle, Code2, Heart, CheckCircle2, Clock, Mic2
+  Trash2, Edit3, Plus, Save, AlertTriangle, Code2, Heart, CheckCircle2, Clock
 } from 'lucide-react';
 
 const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycby5j5IyS2E8blGQqXKLGB-xntMHl1_HUQUR7xs3Clo_nByuc9v6ZzDr7-J05Pi1aNt1/exec";
@@ -177,7 +177,7 @@ export default function BookingSystem() {
                       <Tooltip key={time}>
                         <TooltipTrigger asChild>
                           <div className="w-full">
-                            <Button disabled={isBooked || isPast} className={`h-11 w-full rounded-xl text-[10px] font-black transition-all ${isBooked ? "bg-red-500 text-white opacity-100 pointer-events-auto shadow-lg" : isPast ? "bg-slate-100 text-slate-400 cursor-not-allowed" : "bg-slate-50 text-slate-500 hover:bg-blue-600 hover:text-white"}`} onClick={() => { if(!isBooked && !isPast) { setTempBooking({ ...tempBooking, room: room.name, startTime: time, name: "", purposeType: "", purposeDetail: "" }); setShowModal(true); } }}>{time}</Button>
+                            <Button disabled={isBooked || isPast} className={`h-11 w-full rounded-xl text-[10px] font-black transition-all ${isBooked ? "bg-red-500 text-white opacity-100 shadow-lg" : isPast ? "bg-slate-100 text-slate-400 cursor-not-allowed" : "bg-slate-50 text-slate-500 hover:bg-blue-600 hover:text-white"}`} onClick={() => { if(!isBooked && !isPast) { setTempBooking({ ...tempBooking, room: room.name, startTime: time, name: "", purposeType: "", purposeDetail: "" }); setShowModal(true); } }}>{time}</Button>
                           </div>
                         </TooltipTrigger>
                         {isBooked && (
@@ -185,7 +185,6 @@ export default function BookingSystem() {
                             <div className="space-y-2">
                               <p className="font-black text-[11px] text-blue-400 uppercase leading-none border-b border-white/10 pb-1">{bookingDetail.user_name}</p>
                               <p className="text-[10px] font-bold flex items-center gap-1 text-white opacity-90"><BookOpen size={12}/> {bookingDetail.purpose_type}</p>
-                              <p className="text-[8px] text-slate-400 uppercase mt-1">Masa: {bookingDetail.start_time} - {bookingDetail.end_time}</p>
                             </div>
                           </TooltipContent>
                         )}
@@ -211,19 +210,12 @@ export default function BookingSystem() {
             <div className="space-y-5 mt-8">
               <div className="space-y-1.5">
                 <Label className="text-[10px] font-black uppercase text-slate-400 ml-1">Nama Pemohon</Label>
-                <Input 
-                  defaultValue={tempBooking.name} 
-                  onBlur={e => setTempBooking({...tempBooking, name: e.target.value})} 
-                  className="rounded-2xl h-12 bg-slate-50 border-none font-black" 
-                  placeholder="Nama Guru" 
-                />
+                <Input defaultValue={tempBooking.name} onBlur={e => setTempBooking({...tempBooking, name: e.target.value})} className="rounded-2xl h-12 bg-slate-50 border-none font-black" placeholder="Nama Guru" />
               </div>
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-1.5">
                   <Label className="text-[10px] font-black uppercase text-slate-400 ml-1 flex items-center gap-1"><Clock size={10}/> Masa Mula</Label>
-                  <div className="h-12 rounded-2xl bg-slate-100 flex items-center px-4 font-black text-slate-500 text-sm border-2 border-dashed border-slate-200">
-                    {tempBooking.startTime}
-                  </div>
+                  <div className="h-12 rounded-2xl bg-slate-100 flex items-center px-4 font-black text-slate-500 text-sm border-2 border-dashed border-slate-200">{tempBooking.startTime}</div>
                 </div>
                 <div className="space-y-1.5">
                   <Label className="text-[10px] font-black uppercase text-blue-600 ml-1 flex items-center gap-1"><Clock size={10}/> Masa Tamat</Label>
@@ -235,20 +227,11 @@ export default function BookingSystem() {
                 </div>
               </div>
               <div className="space-y-1.5">
-                <Label className="text-[10px] font-black uppercase text-slate-400 ml-1">Tujuan / Aktiviti</Label>
+                <Label className="text-[10px] font-black uppercase text-slate-400 ml-1">Tujuan</Label>
                 <select className="w-full h-12 rounded-2xl bg-slate-50 text-[11px] font-black px-3 outline-none" value={tempBooking.purposeType} onChange={e => setTempBooking({...tempBooking, purposeType: e.target.value})}>
                   <option value="">PILIH TUJUAN</option>
                   {purposes.map(p => <option key={p} value={p}>{p.toUpperCase()}</option>)}
                 </select>
-              </div>
-              <div className="space-y-1.5">
-                <Label className="text-[10px] font-black uppercase text-slate-400 ml-1">Catatan</Label>
-                <Input 
-                  defaultValue={tempBooking.purposeDetail} 
-                  onBlur={e => setTempBooking({...tempBooking, purposeDetail: e.target.value})} 
-                  className="rounded-2xl h-12 bg-slate-50 border-none font-black" 
-                  placeholder="Cth: 5 Arif" 
-                />
               </div>
               <Button onClick={handleBooking} disabled={loading} className="w-full h-14 rounded-[20px] bg-blue-600 font-black uppercase text-xs tracking-widest shadow-xl">
                 {loading ? <Loader2 className="animate-spin" /> : "Sahkan Tempahan"}
@@ -260,9 +243,7 @@ export default function BookingSystem() {
         <Dialog open={bookingSuccess} onOpenChange={setBookingSuccess}>
           <DialogContent className="rounded-[40px] max-w-[320px] p-8 text-center border-none shadow-2xl">
             <div className="flex flex-col items-center py-4">
-              <div className="bg-emerald-100 p-4 rounded-full mb-4 animate-bounce">
-                <CheckCircle2 size={48} className="text-emerald-600" />
-              </div>
+              <div className="bg-emerald-100 p-4 rounded-full mb-4 animate-bounce"><CheckCircle2 size={48} className="text-emerald-600" /></div>
               <h3 className="text-xl font-black uppercase text-slate-800 mb-2">Berjaya!</h3>
               <Button onClick={() => setBookingSuccess(false)} className="mt-8 w-full bg-slate-900 rounded-2xl h-12 font-black uppercase text-[10px]">Tutup</Button>
             </div>
@@ -271,18 +252,17 @@ export default function BookingSystem() {
 
         <Dialog open={showAdminLogin} onOpenChange={setShowAdminLogin}>
           <DialogContent className="rounded-[40px] max-w-[320px] p-10 text-center border-none shadow-2xl">
-            <div className="bg-blue-100 p-5 rounded-3xl text-blue-600 mb-2 w-fit mx-auto"><Lock size={32} /></div>
             <DialogTitle className="text-2xl font-black uppercase tracking-tighter">ADMIN LOGIN</DialogTitle>
             <div className="mt-6 space-y-4">
               <Input type="password" value={passwordInput} onChange={e => setPasswordInput(e.target.value)} onKeyDown={e => e.key === 'Enter' && (passwordInput === "admin123" ? (setIsAdmin(true), setShowAdminLogin(false), setShowAdminPanel(true), setPasswordInput("")) : alert("Salah!"))} className="text-center font-black h-14 bg-slate-50 border-none rounded-2xl text-lg tracking-[0.4em]" placeholder="••••" />
-              <Button onClick={() => passwordInput === "admin123" ? (setIsAdmin(true), setShowAdminLogin(false), setShowAdminPanel(true), setPasswordInput("")) : alert("Salah!")} className="w-full h-14 rounded-2xl bg-slate-900 font-black uppercase text-[10px] tracking-widest">Masuk</Button>
+              <Button onClick={() => passwordInput === "admin123" ? (setIsAdmin(true), setShowAdminLogin(false), setShowAdminPanel(true), setPasswordInput("")) : alert("Salah!")} className="w-full h-14 rounded-2xl bg-slate-900 font-black uppercase text-[10px] tracking-widest shadow-xl">Masuk</Button>
             </div>
           </DialogContent>
         </Dialog>
 
         <Dialog open={showAdminPanel} onOpenChange={setShowAdminPanel}>
           <DialogContent className="max-w-4xl h-[85vh] flex flex-col p-0 rounded-[40px] overflow-hidden border-none shadow-2xl">
-            <div className="p-8 bg-slate-900 text-white shrink-0 font-black uppercase text-2xl flex items-center gap-3"><Settings size={28} className="text-blue-500"/> KONFIGURASI ADMIN</div>
+            <div className="p-8 bg-slate-900 text-white shrink-0 font-black uppercase tracking-tighter flex items-center gap-3 text-2xl"><Settings size={28} className="text-blue-500"/> KONFIGURASI ADMIN</div>
             <Tabs defaultValue="rooms" className="flex-grow flex flex-col overflow-hidden">
               <TabsList className="mx-8 mt-6 bg-slate-100 p-1.5 rounded-2xl w-fit border border-slate-200">
                 <TabsTrigger value="rooms" className="text-[10px] font-black uppercase px-6">Bilik</TabsTrigger>
@@ -291,15 +271,6 @@ export default function BookingSystem() {
               </TabsList>
               <TabsContent value="rooms" className="flex-grow overflow-y-auto p-8 pt-4">
                 <Button onClick={() => setIsEditingRoom({ name: "", icon: "🏢", capacity: "30", color: "from-blue-600 to-blue-700", status: "Active" })} className="mb-6 bg-blue-600 text-[10px] font-black uppercase rounded-xl px-6 h-11 shadow-lg">+ Tambah Bilik</Button>
-                {isEditingRoom && (
-                  <Card className="p-5 mb-8 border-2 border-blue-100 bg-blue-50/50 rounded-[24px] grid grid-cols-1 md:grid-cols-5 gap-4 animate-in slide-in-from-top-2">
-                    <Input value={isEditingRoom.name} onChange={e => setIsEditingRoom({ ...isEditingRoom, name: e.target.value })} className="h-10 rounded-xl bg-white" placeholder="Nama" />
-                    <Input value={isEditingRoom.icon} onChange={e=>setIsEditingRoom({...isEditingRoom, icon:e.target.value})} className="h-10 rounded-xl bg-white" placeholder="Ikon" />
-                    <Input value={isEditingRoom.capacity} onChange={e=>setIsEditingRoom({...isEditingRoom, capacity:e.target.value})} className="h-10 rounded-xl bg-white" placeholder="Pax" />
-                    <Input value={isEditingRoom.color} onChange={e=>setIsEditingRoom({...isEditingRoom, color:e.target.value})} className="h-10 rounded-xl bg-white" placeholder="Warna" />
-                    <div className="flex gap-2"><Button onClick={()=>saveAdminAction("updateRooms", isEditingRoom)} className="bg-emerald-600 h-10 w-full rounded-xl"><Save size={18}/></Button><Button onClick={()=>setIsEditingRoom(null)} variant="outline" className="h-10 rounded-xl">X</Button></div>
-                  </Card>
-                )}
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   {rooms.map((r, i) => (
                     <div key={i} className="flex items-center justify-between p-5 bg-slate-50 rounded-[24px] border border-slate-100">
@@ -314,7 +285,7 @@ export default function BookingSystem() {
               </TabsContent>
               <TabsContent value="purposes" className="p-8"><div className="space-y-4">{purposes.map((p, i) => (<div key={i} className="p-4 bg-slate-50 rounded-2xl flex justify-between uppercase font-black text-xs">{p}<Button variant="ghost" onClick={() => saveAdminAction("updatePurposes", purposes.filter((_, idx) => idx !== i))} className="text-red-400"><Trash2 size={18}/></Button></div>))}</div></TabsContent>
               <TabsContent value="data" className="p-8 h-full overflow-y-auto">
-                 <div className="space-y-3">{bookings.slice(0).reverse().map((b, i) => (<div key={i} className="p-4 bg-white rounded-[24px] border border-slate-100 flex justify-between items-center shadow-sm"><div><p className="font-black text-[11px] text-blue-600 uppercase">{b.user_name}</p><p className="text-[10px] text-slate-400 font-bold uppercase mt-2">{b.room_name} | {b.booking_date}</p></div><Button variant="ghost" onClick={() => saveAdminAction("deleteBooking", { row_index: b.row_index })} className="text-red-400 h-12 w-12"><Trash2 size={20}/></Button></div>))}</div>
+                <div className="space-y-3">{bookings.slice(0).reverse().map((b, i) => (<div key={i} className="p-4 bg-white rounded-[24px] border border-slate-100 flex justify-between items-center shadow-sm"><div><p className="font-black text-[11px] text-blue-600 uppercase leading-none">{b.user_name}</p><p className="text-[10px] text-slate-400 font-bold uppercase mt-2">{b.room_name} | {b.booking_date}</p></div><Button variant="ghost" onClick={() => saveAdminAction("deleteBooking", { row_index: b.row_index })} className="text-red-400 rounded-xl h-12 w-12"><Trash2 size={20}/></Button></div>))}</div>
               </TabsContent>
             </Tabs>
           </DialogContent>
